@@ -28,4 +28,8 @@ public class Task {
     public int getPriority() {
         return priority;
     }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
+    }
 }

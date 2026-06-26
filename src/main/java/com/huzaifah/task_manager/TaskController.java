@@ -23,17 +23,12 @@ public class TaskController {
     }
 
     @GetMapping("/tasks/all")
-    public List<String> getAllTasks() {
+    public List<TaskDTO> getAllTasks() {
         return taskService.getAllTasks();
     }
 
-    @GetMapping("/tasks/objects")
-    public List<TaskDTO> getTaskObjects() {
-        return taskService.getTaskObjects();
-    }
-
     @GetMapping("/tasks/{id}")
-    public String getTaskById(@PathVariable Long id) {
+    public TaskDTO getTaskById(@PathVariable Long id) {
         return taskService.getTaskById(id);
     }
 
@@ -43,7 +38,18 @@ public class TaskController {
     }
 
     @PostMapping("/tasks")
-    public Task createTask(@RequestBody Task task) {
+    public TaskDTO createTask(@RequestBody Task task) {
         return taskService.createTask(task);
+    }
+
+    @PutMapping("/tasks/{id}")
+    public TaskDTO updateTask(@PathVariable Long id, @RequestBody Task task) {
+        return taskService.updateTask(id, task);
+    }
+
+    @DeleteMapping("/tasks/{id}")
+    public String deleteTask(@PathVariable Long id) {
+        boolean deleted = taskService.deleteTask(id);
+        return deleted ? "Task deleted" : "Task not found";
     }
 }

@@ -1,37 +1,57 @@
 package com.huzaifah.task_manager;
 
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class TaskService {
 
-    public List<String> getAllTasks() {
-        return List.of("Buy groceries", "Finish Java course", "Clean the house");
+    private final List<Task> tasks = new ArrayList<>();
+
+    public TaskService() {
+        tasks.add(new Task(1L, "Buy groceries", false, 1));
+        tasks.add(new Task(2L, "Finish Java course", false, 3));
+        tasks.add(new Task(3L, "Clean the house", true, 2));
     }
 
-    public List<TaskDTO> getTaskObjects() {
-        List<Task> tasks = List.of(
-                new Task(1L, "Buy groceries", false, 1),
-                new Task(2L, "Finish Java course", false, 3),
-                new Task(3L, "Clean the house", true, 2)
-        );
+    public List<TaskDTO> getAllTasks() {
         return tasks.stream()
                 .map(task -> new TaskDTO(task.getId(), task.getTitle(), task.isCompleted()))
                 .collect(Collectors.toList());
     }
 
-    public String getTaskById(Long id) {
-        return "You asked for task with ID: " + id;
+    public TaskDTO getTaskById(Long id) {
+        for (Task task : tasks) {
+            if (task.getId().equals(id)) {
+                return new TaskDTO(task.getId(), task.getTitle(), task.isCompleted());
+            }
+        }
+        return null;
     }
 
     public String searchTasks(String keyword) {
         return "Searching tasks for: " + keyword;
     }
 
-    public Task createTask(Task task) {
-        System.out.println("Received task: " + task.getTitle());
-        return task;
+    public TaskDTO createTask(Task task) {
+        tasks.add(task);
+        return new TaskDTO(task.getId(), task.getTitle(), task.isCompleted());
+    }
+
+    public TaskDTO updateTask(Long id, Task updatedTask) {
+        for (Task task : tasks) {
+            if (task.getId().equals(id)) {
+                task.setCompleted(updatedTask.isCompleted());
+                return new TaskDTO(task.getId(), task.getTitle(), task.isCompleted());
+            }
+        }
+        return null;
+    }
+
+    public boolean deleteTask(Long id) {
+        return tasks.removeIf(task -> task.getId().equals(id));
     }
 }
