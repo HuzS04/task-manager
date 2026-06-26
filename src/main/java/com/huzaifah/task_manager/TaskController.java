@@ -28,7 +28,7 @@ public class TaskController {
     }
 
     @GetMapping("/tasks/objects")
-    public List<Task> getTaskObjects() {
+    public List<TaskDTO> getTaskObjects() {
         return taskService.getTaskObjects();
     }
 

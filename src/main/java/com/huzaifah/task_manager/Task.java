@@ -4,11 +4,13 @@ public class Task {
     private Long id;
     private String title;
     private boolean completed;
+    private int priority;
 
-    public Task(Long id, String title, boolean completed){
+    public Task(Long id, String title, boolean completed, int priority){
         this.id = id;
         this.title = title;
         this.completed = completed;
+        this.priority = priority;
     }
 
     public Long getId(){
@@ -21,5 +23,9 @@ public class Task {
 
     public boolean isCompleted(){
         return completed;
+    }
+
+    public int getPriority() {
+        return priority;
     }
 }
