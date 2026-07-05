@@ -13,16 +13,6 @@ public class TaskController {
     }
 
     @GetMapping("/tasks")
-    public String getTasks() {
-        return "Here are your tasks";
-    }
-
-    @GetMapping("/")
-    public String home() {
-        return "Welcome to the Task Manager";
-    }
-
-    @GetMapping("/tasks/all")
     public List<TaskDTO> getAllTasks() {
         return taskService.getAllTasks();
     }
@@ -30,11 +20,6 @@ public class TaskController {
     @GetMapping("/tasks/{id}")
     public TaskDTO getTaskById(@PathVariable Long id) {
         return taskService.getTaskById(id);
-    }
-
-    @GetMapping("/tasks/search")
-    public String searchTasks(@RequestParam String keyword) {
-        return taskService.searchTasks(keyword);
     }
 
     @PostMapping("/tasks")
@@ -51,5 +36,10 @@ public class TaskController {
     public String deleteTask(@PathVariable Long id) {
         boolean deleted = taskService.deleteTask(id);
         return deleted ? "Task deleted" : "Task not found";
+    }
+
+    @GetMapping("/users/{id}/tasks")
+    public List<TaskDTO> getTasksByUser(@PathVariable Long id){
+        return taskService.getTasksByUser(id);
     }
 }
