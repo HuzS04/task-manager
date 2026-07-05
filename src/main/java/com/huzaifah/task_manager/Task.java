@@ -14,14 +14,16 @@ public class Task {
     private String title;
     private boolean completed;
     private int priority;
+    private Long userId;
 
     public Task() {} //JPA requires a no argument constructor
 
-    public Task(Long id, String title, boolean completed, int priority) {
+    public Task(Long id, String title, boolean completed, int priority, Long userId) {
         this.id = id;
         this.title = title;
         this.completed = completed;
         this.priority = priority;
+        this.userId = userId;
     }
 
     public Long getId(){
@@ -42,5 +44,9 @@ public class Task {
 
     public void setCompleted(boolean completed) {
         this.completed = completed;
+    }
+
+    public Long getUserId() {
+        return userId;
     }
 }
