@@ -15,26 +15,26 @@ public class TaskService {
 
     public List<TaskDTO> getAllTasks() {
         return taskRepository.findAll().stream()
-                .map(task -> new TaskDTO(task.getId(), task.getTitle(), task.isCompleted(), task.getUserId()))
+                .map(task -> new TaskDTO(task.getId(), task.getTitle(), task.isCompleted(), task.getUser() != null ? task.getUser().getName() : null))
                 .collect(Collectors.toList());
     }
 
     public TaskDTO getTaskById(Long id) {
         return taskRepository.findById(id)
-                .map(task -> new TaskDTO(task.getId(), task.getTitle(), task.isCompleted(), task.getUserId()))
+                .map(task -> new TaskDTO(task.getId(), task.getTitle(), task.isCompleted(), task.getUser() != null ? task.getUser().getName() : null))
                 .orElse(null);
     }
 
     public TaskDTO createTask(Task task) {
         Task saved = taskRepository.save(task);
-        return new TaskDTO(saved.getId(), saved.getTitle(), saved.isCompleted(), saved.getUserId());
+        return new TaskDTO(saved.getId(), saved.getTitle(), saved.isCompleted(), saved.getUser() != null ? task.getUser().getName() : null);
     }
 
     public TaskDTO updateTask(Long id, Task updatedTask) {
         return taskRepository.findById(id).map(task -> {
             task.setCompleted(updatedTask.isCompleted());
             Task saved = taskRepository.save(task);
-            return new TaskDTO(saved.getId(), saved.getTitle(), saved.isCompleted(), saved.getUserId());
+            return new TaskDTO(saved.getId(), saved.getTitle(), saved.isCompleted(), saved.getUser() != null ? task.getUser().getName() : null);
         }).orElse(null);
     }
 
@@ -47,8 +47,8 @@ public class TaskService {
     }
 
     public List<TaskDTO> getTasksByUser(Long userId){
-        return taskRepository.findByUserId(userId).stream()
-                .map(task -> new TaskDTO(task.getId(), task.getTitle(), task.isCompleted(), task.getUserId()))
+        return taskRepository.findByUser_Id(userId).stream()
+                .map(task -> new TaskDTO(task.getId(), task.getTitle(), task.isCompleted(), task.getUser() != null ? task.getUser().getName() : null))
                 .collect(Collectors.toList());
     }
 }

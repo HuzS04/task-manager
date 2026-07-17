@@ -6,7 +6,7 @@ import java.util.List;
 //repository - spring interface that gives you database operations (save,del,find) for free
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
-    List<Task> findByUserId(Long userId);
+    List<Task> findByUser_Id(Long userId);
 }
 // Task type of object the repo manages
 // Long - type of the ID field

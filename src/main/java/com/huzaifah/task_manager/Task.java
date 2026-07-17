@@ -1,52 +1,37 @@
 package com.huzaifah.task_manager;
 
 import jakarta.persistence.*;
-//JPA (Java Persistence API) - standard way java talks to databases, use annotations to tell it how to map to db
 
-@Entity //this class maps to a database table
-@Table(name = "tasks") //the specific table it maps to
+@Entity
+@Table(name = "tasks")
 public class Task {
 
-    @Id //primary key marking
-    @GeneratedValue(strategy = GenerationType.IDENTITY) //let db generate this value itself
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String title;
     private boolean completed;
     private int priority;
-    private Long userId;
 
-    public Task() {} //JPA requires a no argument constructor
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    public Task(Long id, String title, boolean completed, int priority, Long userId) {
-        this.id = id;
+    public Task() {}
+
+    public Task(String title, boolean completed, int priority) {
         this.title = title;
         this.completed = completed;
         this.priority = priority;
-        this.userId = userId;
     }
 
-    public Long getId(){
-        return id;
-    }
+    public Long getId() { return id; }
+    public String getTitle() { return title; }
+    public boolean isCompleted() { return completed; }
+    public int getPriority() { return priority; }
+    public User getUser() { return user; }
 
-    public String getTitle(){
-        return title;
-    }
-
-    public boolean isCompleted(){
-        return completed;
-    }
-
-    public int getPriority() {
-        return priority;
-    }
-
-    public void setCompleted(boolean completed) {
-        this.completed = completed;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
+    public void setCompleted(boolean completed) { this.completed = completed; }
+    public void setUser(User user) { this.user = user; }
 }
