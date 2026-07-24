@@ -14,11 +14,15 @@ public class Task {
     private boolean completed;
     private int priority;
 
-    @ManyToOne
+    // @ManyToOne — many tasks can belong to one user
+    // FetchType.LAZY — don't load the User from the database until we actually call getUser()
+    // more efficient than EAGER which would load the User on every single Task query
+    @ManyToOne(fetch = FetchType.LAZY)
+    // tells JPA which column in the tasks table holds the foreign key link to users
     @JoinColumn(name = "user_id")
     private User user;
 
-    public Task() {}
+    public Task() {} // JPA requires a no-arg constructor
 
     public Task(String title, boolean completed, int priority) {
         this.title = title;

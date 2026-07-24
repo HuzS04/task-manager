@@ -8,9 +8,11 @@ import java.util.stream.Collectors;
 public class TaskService {
 
     private final TaskRepository taskRepository;
+    private final UserRepository userRepository;
 
-    public TaskService(TaskRepository taskRepository) {
+    public TaskService(TaskRepository taskRepository, UserRepository userRepository) {
         this.taskRepository = taskRepository;
+        this.userRepository = userRepository;
     }
 
     public List<TaskDTO> getAllTasks() {
@@ -26,8 +28,13 @@ public class TaskService {
     }
 
     public TaskDTO createTask(Task task) {
+        if (task.getUser() != null && task.getUser().getId() != null) {
+            User fullUser = userRepository.findById(task.getUser().getId()).orElse(null);
+            task.setUser(fullUser);
+        }
         Task saved = taskRepository.save(task);
-        return new TaskDTO(saved.getId(), saved.getTitle(), saved.isCompleted(), saved.getUser() != null ? task.getUser().getName() : null);
+        return new TaskDTO(saved.getId(), saved.getTitle(), saved.isCompleted(),
+                saved.getUser() != null ? saved.getUser().getName() : null);
     }
 
     public TaskDTO updateTask(Long id, Task updatedTask) {
