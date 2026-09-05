@@ -58,4 +58,25 @@ public class TaskService {
                 .map(task -> new TaskDTO(task.getId(), task.getTitle(), task.isCompleted(), task.getUser() != null ? task.getUser().getName() : null))
                 .collect(Collectors.toList());
     }
+
+    public List<TaskDTO> getIncompleteTasks() {
+        return taskRepository.findIncompleteTasks().stream()
+                .map(task -> new TaskDTO(task.getId(), task.getTitle(), task.isCompleted(),
+                        task.getUser() != null ? task.getUser().getName() : null))
+                .collect(Collectors.toList());
+    }
+
+    public List<TaskDTO> searchByTitle(String keyword) {
+        return taskRepository.searchByTitle(keyword).stream()
+                .map(task -> new TaskDTO(task.getId(), task.getTitle(), task.isCompleted(),
+                        task.getUser() != null ? task.getUser().getName() : null))
+                .collect(Collectors.toList());
+    }
+
+    public List<TaskDTO> findTasksByUserOrderedByPriority(Long userId){
+        return taskRepository.findTasksByUserOrderedByPriority(userId).stream()
+                .map(task -> new TaskDTO(task.getId(), task.getTitle(), task.isCompleted(),
+                        task.getUser() != null ? task.getUser().getName() : null))
+                .collect(Collectors.toList());
+    }
 }

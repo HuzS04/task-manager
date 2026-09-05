@@ -42,4 +42,19 @@ public class TaskController {
     public List<TaskDTO> getTasksByUser(@PathVariable Long id){
         return taskService.getTasksByUser(id);
     }
+
+    @GetMapping("/tasks/incomplete")
+    public List<TaskDTO> getIncompleteTasks() {
+        return taskService.getIncompleteTasks();
+    }
+
+    @GetMapping("/tasks/search")
+    public List<TaskDTO> searchTasks(@RequestParam String keyword) {
+        return taskService.searchByTitle(keyword);
+    }
+
+    @GetMapping("/users/{id}/tasks/priority")
+    public List<TaskDTO> getTasksByUserOrderedByPriority(@PathVariable Long id) {
+        return taskService.findTasksByUserOrderedByPriority(id);
+    }
 }
