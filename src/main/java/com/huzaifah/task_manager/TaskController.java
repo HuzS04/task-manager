@@ -1,5 +1,6 @@
 package com.huzaifah.task_manager;
 
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -23,12 +24,12 @@ public class TaskController {
     }
 
     @PostMapping("/tasks")
-    public TaskDTO createTask(@RequestBody Task task) {
+    public TaskDTO createTask(@Valid @RequestBody Task task) {
         return taskService.createTask(task);
     }
 
     @PutMapping("/tasks/{id}")
-    public TaskDTO updateTask(@PathVariable Long id, @RequestBody Task task) {
+    public TaskDTO updateTask(@PathVariable Long id, @Valid @RequestBody Task task) {
         return taskService.updateTask(id, task);
     }
 

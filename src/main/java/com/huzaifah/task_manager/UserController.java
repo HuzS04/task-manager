@@ -1,5 +1,6 @@
 package com.huzaifah.task_manager;
 
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public UserDTO createUser(@RequestBody User user) {
+    public UserDTO createUser(@Valid @RequestBody User user) {
         return userService.createUser(user);
     }
 

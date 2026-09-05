@@ -1,6 +1,8 @@
 package com.huzaifah.task_manager;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +14,11 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Name cannot be empty")
     private String name;
+
+    @NotBlank(message = "Email must not be empty")
+    @Email(message = "Must be a valid email format")
     private String email;
 
     // @OneToMany — one user has many tasks

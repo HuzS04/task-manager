@@ -1,6 +1,7 @@
 package com.huzaifah.task_manager;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 @Entity
 @Table(name = "tasks")
@@ -10,8 +11,13 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Title cannot be empty")
     private String title;
+
     private boolean completed;
+
+    @Min(value = 1, message = "Priority must be at least 1")
+    @Max(value = 3, message = "Priority must be at most 3")
     private int priority;
 
     // @ManyToOne — many tasks can belong to one user
