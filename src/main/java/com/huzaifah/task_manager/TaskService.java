@@ -21,10 +21,20 @@ public class TaskService {
                 .collect(Collectors.toList());
     }
 
+    // In TaskService — getTaskById updated
+
     public TaskDTO getTaskById(Long id) {
         return taskRepository.findById(id)
-                .map(task -> new TaskDTO(task.getId(), task.getTitle(), task.isCompleted(), task.getUser() != null ? task.getUser().getName() : null))
-                .orElse(null);
+                .map(task -> new TaskDTO(
+                        task.getId(),
+                        task.getTitle(),
+                        task.isCompleted(),
+                        task.getUser() != null ? task.getUser().getName() : null
+                ))
+                // instead of .orElse(null) which silently returns nothing,
+                // .orElseThrow() fires when the Optional is empty (task not found)
+                // throws ResourceNotFoundException which bubbles up to GlobalExceptionHandler
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + id));
     }
 
     public TaskDTO createTask(Task task) {

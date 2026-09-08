@@ -23,7 +23,7 @@ public class UserService {
     public UserDTO getUserById(Long id) {
         return userRepository.findById(id).
                 map(user -> new UserDTO(user.getId(), user.getName()))
-                .orElse(null);
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
     }
 
     public UserDTO createUser(User user) {

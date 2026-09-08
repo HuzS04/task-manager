@@ -1,6 +1,8 @@
 package com.huzaifah.task_manager;
 
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -23,9 +25,17 @@ public class TaskController {
         return taskService.getTaskById(id);
     }
 
+    // In TaskController — createTask updated
+
     @PostMapping("/tasks")
-    public TaskDTO createTask(@Valid @RequestBody Task task) {
-        return taskService.createTask(task);
+// ResponseEntity<TaskDTO> gives you control over BOTH status code AND body
+// before this, Spring defaulted to 200 OK for everything
+// 201 Created is the correct professional status for POST endpoints that create resources
+    public ResponseEntity<TaskDTO> createTask(@Valid @RequestBody Task task) {
+        TaskDTO created = taskService.createTask(task);
+        // status(HttpStatus.CREATED) = 201
+        // body(created) = the TaskDTO as JSON
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/tasks/{id}")
