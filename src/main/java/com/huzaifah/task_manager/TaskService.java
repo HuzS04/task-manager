@@ -49,18 +49,24 @@ public class TaskService {
 
     public TaskDTO updateTask(Long id, Task updatedTask) {
         return taskRepository.findById(id).map(task -> {
+            if (updatedTask.getTitle() != null) {
+                task.setTitle(updatedTask.getTitle());
+            }
+            if (updatedTask.getPriority() > 0) {
+                task.setPriority(updatedTask.getPriority());
+            }
             task.setCompleted(updatedTask.isCompleted());
             Task saved = taskRepository.save(task);
-            return new TaskDTO(saved.getId(), saved.getTitle(), saved.isCompleted(), saved.getUser() != null ? task.getUser().getName() : null);
-        }).orElse(null);
+            return new TaskDTO(saved.getId(), saved.getTitle(), saved.isCompleted(),
+                    saved.getUser() != null ? saved.getUser().getName() : null);
+        }).orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + id));
     }
 
-    public boolean deleteTask(Long id) {
-        if (taskRepository.existsById(id)) {
-            taskRepository.deleteById(id);
-            return true;
+    public void deleteTask(Long id) {
+        if (!taskRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Task not found with id: " + id);
         }
-        return false;
+        taskRepository.deleteById(id);
     }
 
     public List<TaskDTO> getTasksByUser(Long userId){

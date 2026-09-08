@@ -44,4 +44,7 @@ public class Task {
 
     public void setCompleted(boolean completed) { this.completed = completed; }
     public void setUser(User user) { this.user = user; }
+
+    public void setTitle(String title) { this.title = title; }
+    public void setPriority(int priority) { this.priority = priority; }
 }

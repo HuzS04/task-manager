@@ -39,14 +39,15 @@ public class TaskController {
     }
 
     @PutMapping("/tasks/{id}")
-    public TaskDTO updateTask(@PathVariable Long id, @Valid @RequestBody Task task) {
-        return taskService.updateTask(id, task);
+    public ResponseEntity<TaskDTO> updateTask(@PathVariable Long id, @Valid @RequestBody Task task) {
+        TaskDTO updated = taskService.updateTask(id, task);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/tasks/{id}")
-    public String deleteTask(@PathVariable Long id) {
-        boolean deleted = taskService.deleteTask(id);
-        return deleted ? "Task deleted" : "Task not found";
+    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
+        taskService.deleteTask(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/users/{id}/tasks")
