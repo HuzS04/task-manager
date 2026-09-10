@@ -52,7 +52,7 @@ public class TaskService {
             if (updatedTask.getTitle() != null) {
                 task.setTitle(updatedTask.getTitle());
             }
-            if (updatedTask.getPriority() > 0) {
+            if (updatedTask.getPriority() != 0 && updatedTask.getPriority() > 0) {
                 task.setPriority(updatedTask.getPriority());
             }
             task.setCompleted(updatedTask.isCompleted());
