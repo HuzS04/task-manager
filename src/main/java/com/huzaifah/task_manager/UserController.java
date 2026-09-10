@@ -1,5 +1,8 @@
 package com.huzaifah.task_manager;
 
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,13 +32,14 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public UserDTO createUser(@RequestBody User user) {
-        return userService.createUser(user);
+    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody User user) {
+        UserDTO created = userService.createUser(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @DeleteMapping("/users/{id}")
-    public String deleteUser(@PathVariable Long id) {
-        boolean deleted = userService.deleteUser(id);
-        return deleted ? "User deleted" : "User not found";
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id){
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 }

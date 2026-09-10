@@ -23,7 +23,7 @@ public class UserService {
     public UserDTO getUserById(Long id) {
         return userRepository.findById(id).
                 map(user -> new UserDTO(user.getId(), user.getName()))
-                .orElse(null);
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
     }
 
     public UserDTO createUser(User user) {
@@ -31,11 +31,10 @@ public class UserService {
         return new UserDTO(saved.getId(), saved.getName());
     }
 
-    public boolean deleteUser(Long id){
-        if (userRepository.existsById(id)){
-            userRepository.deleteById(id);
-            return true;
+    public void deleteUser(Long id){
+        if (!userRepository.existsById(id)) {
+            throw new ResourceNotFoundException("User not found with id: " + id);
         }
-        return false;
+        userRepository.deleteById(id);
     }
 }

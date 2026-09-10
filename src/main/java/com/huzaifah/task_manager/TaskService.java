@@ -8,47 +8,91 @@ import java.util.stream.Collectors;
 public class TaskService {
 
     private final TaskRepository taskRepository;
+    private final UserRepository userRepository;
 
-    public TaskService(TaskRepository taskRepository) {
+    public TaskService(TaskRepository taskRepository, UserRepository userRepository) {
         this.taskRepository = taskRepository;
+        this.userRepository = userRepository;
     }
 
     public List<TaskDTO> getAllTasks() {
         return taskRepository.findAll().stream()
-                .map(task -> new TaskDTO(task.getId(), task.getTitle(), task.isCompleted(), task.getUserId()))
+                .map(task -> new TaskDTO(task.getId(), task.getTitle(), task.isCompleted(), task.getUser() != null ? task.getUser().getName() : null))
                 .collect(Collectors.toList());
     }
 
+    // In TaskService — getTaskById updated
+
     public TaskDTO getTaskById(Long id) {
         return taskRepository.findById(id)
-                .map(task -> new TaskDTO(task.getId(), task.getTitle(), task.isCompleted(), task.getUserId()))
-                .orElse(null);
+                .map(task -> new TaskDTO(
+                        task.getId(),
+                        task.getTitle(),
+                        task.isCompleted(),
+                        task.getUser() != null ? task.getUser().getName() : null
+                ))
+                // instead of .orElse(null) which silently returns nothing,
+                // .orElseThrow() fires when the Optional is empty (task not found)
+                // throws ResourceNotFoundException which bubbles up to GlobalExceptionHandler
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + id));
     }
 
     public TaskDTO createTask(Task task) {
+        if (task.getUser() != null && task.getUser().getId() != null) {
+            User fullUser = userRepository.findById(task.getUser().getId()).orElse(null);
+            task.setUser(fullUser);
+        }
         Task saved = taskRepository.save(task);
-        return new TaskDTO(saved.getId(), saved.getTitle(), saved.isCompleted(), saved.getUserId());
+        return new TaskDTO(saved.getId(), saved.getTitle(), saved.isCompleted(),
+                saved.getUser() != null ? saved.getUser().getName() : null);
     }
 
     public TaskDTO updateTask(Long id, Task updatedTask) {
         return taskRepository.findById(id).map(task -> {
+            if (updatedTask.getTitle() != null) {
+                task.setTitle(updatedTask.getTitle());
+            }
+            if (updatedTask.getPriority() != 0 && updatedTask.getPriority() > 0) {
+                task.setPriority(updatedTask.getPriority());
+            }
             task.setCompleted(updatedTask.isCompleted());
             Task saved = taskRepository.save(task);
-            return new TaskDTO(saved.getId(), saved.getTitle(), saved.isCompleted(), saved.getUserId());
-        }).orElse(null);
+            return new TaskDTO(saved.getId(), saved.getTitle(), saved.isCompleted(),
+                    saved.getUser() != null ? saved.getUser().getName() : null);
+        }).orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + id));
     }
 
-    public boolean deleteTask(Long id) {
-        if (taskRepository.existsById(id)) {
-            taskRepository.deleteById(id);
-            return true;
+    public void deleteTask(Long id) {
+        if (!taskRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Task not found with id: " + id);
         }
-        return false;
+        taskRepository.deleteById(id);
     }
 
     public List<TaskDTO> getTasksByUser(Long userId){
-        return taskRepository.findByUserId(userId).stream()
-                .map(task -> new TaskDTO(task.getId(), task.getTitle(), task.isCompleted(), task.getUserId()))
+        return taskRepository.findByUser_Id(userId).stream()
+                .map(task -> new TaskDTO(task.getId(), task.getTitle(), task.isCompleted(), task.getUser() != null ? task.getUser().getName() : null))
+                .collect(Collectors.toList());
+    }
+
+    public List<TaskDTO> getIncompleteTasks() {
+        return taskRepository.findIncompleteTasks().stream()
+                .map(task -> new TaskDTO(task.getId(), task.getTitle(), task.isCompleted(),
+                        task.getUser() != null ? task.getUser().getName() : null))
+                .collect(Collectors.toList());
+    }
+
+    public List<TaskDTO> searchByTitle(String keyword) {
+        return taskRepository.searchByTitle(keyword).stream()
+                .map(task -> new TaskDTO(task.getId(), task.getTitle(), task.isCompleted(),
+                        task.getUser() != null ? task.getUser().getName() : null))
+                .collect(Collectors.toList());
+    }
+
+    public List<TaskDTO> findTasksByUserOrderedByPriority(Long userId){
+        return taskRepository.findTasksByUserOrderedByPriority(userId).stream()
+                .map(task -> new TaskDTO(task.getId(), task.getTitle(), task.isCompleted(),
+                        task.getUser() != null ? task.getUser().getName() : null))
                 .collect(Collectors.toList());
     }
 }
