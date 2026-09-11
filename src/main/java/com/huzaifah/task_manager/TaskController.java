@@ -1,6 +1,7 @@
 package com.huzaifah.task_manager;
 
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,14 @@ public class TaskController {
 
     public TaskController(TaskService taskService) {
         this.taskService = taskService;
+    }
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @GetMapping("/test-token")
+    public String testToken() {
+        return jwtUtil.generateToken("bob@email.com");
     }
 
     @GetMapping("/tasks")
