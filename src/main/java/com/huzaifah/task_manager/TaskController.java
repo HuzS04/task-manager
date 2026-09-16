@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -11,17 +13,11 @@ import java.util.List;
 public class TaskController {
 
     private final TaskService taskService;
+    private final UserRepository userRepository;
 
-    public TaskController(TaskService taskService) {
+    public TaskController(TaskService taskService, UserRepository userRepository) {
         this.taskService = taskService;
-    }
-
-    @Autowired
-    private JwtUtil jwtUtil;
-
-    @GetMapping("/test-token")
-    public String testToken() {
-        return jwtUtil.generateToken("bob@email.com");
+        this.userRepository = userRepository;
     }
 
     @GetMapping("/tasks")
@@ -77,5 +73,19 @@ public class TaskController {
     @GetMapping("/users/{id}/tasks/priority")
     public List<TaskDTO> getTasksByUserOrderedByPriority(@PathVariable Long id) {
         return taskService.findTasksByUserOrderedByPriority(id);
+    }
+
+    @GetMapping("/tasks/my")
+    public List<TaskDTO> getMyTasks() {
+        // get the currently authenticated user from the security context
+        // this was set by JwtAuthFilter when it validated the token
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName(); // the email stored in the token
+
+        // find the user by email then get their tasks
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        return taskService.getTasksByUser(user.getId());
     }
 }
