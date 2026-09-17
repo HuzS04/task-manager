@@ -2,41 +2,75 @@ package com.huzaifah.task_manager;
 
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class NoteService {
-    private final List<Note> notes = new ArrayList<>();
+    private final NoteRepository noteRepository;
+    private final UserRepository userRepository;
 
-    public NoteService(){
-        notes.add(new Note(0L, "Clean the dishes", true));
-        notes.add(new Note(1L, "Brush my teeth", false));
+    public NoteService(NoteRepository noteRepository, UserRepository userRepository){
+        this.noteRepository = noteRepository;
+        this.userRepository = userRepository;
     }
 
     public List<NoteDTO> getAllNotes(){
-        return notes.stream().map(note -> new NoteDTO(note.getId(), note.getContent()))
+        return noteRepository.findAll().stream()
+                .map(note -> new NoteDTO(note.getId(), note.getContent(), note.getUser() != null ? note.getUser().getName() : null))
                 .collect(Collectors.toList());
     }
 
     public NoteDTO getNoteById(Long id){
-        for(Note note : notes){
-            if (note.getId().equals(id)){
-                return new NoteDTO(note.getId(), note.getContent());
-            }
+        return noteRepository.findById(id)
+                .map(note -> new NoteDTO(
+                        note.getId(),
+                        note.getContent(),
+                        note.getUser() != null ? note.getUser().getName() : null
+                ))
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found with id: " + id));
+    }
+
+    /*
+    public NoteDTO createNote(Note note) {
+        if (note.getUser() != null && note.getUser().getId() != null) {
+            User fullUser = userRepository.findById(note.getUser().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+            note.setUser(fullUser);
         }
-        return null;
+        Note saved = noteRepository.save(note);
+        return new NoteDTO(saved.getId(), saved.getContent(),
+                saved.getUser() != null ? saved.getUser().getName() : null);
+
+    }
+    */
+
+    public NoteDTO createNote(Note note) {
+        System.out.println("Note user: " + note.getUser());
+        System.out.println("Note user id: " + (note.getUser() != null ? note.getUser().getId() : "null"));
+
+        if (note.getUser() != null && note.getUser().getId() != null) {
+            User fullUser = userRepository.findById(note.getUser().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+            note.setUser(fullUser);
+        }
+        Note saved = noteRepository.save(note);
+        return new NoteDTO(saved.getId(), saved.getContent(),
+                saved.getUser() != null ? saved.getUser().getName() : null);
     }
 
-    public NoteDTO createNote(Note note){
-        notes.add(note);
-        return new NoteDTO(note.getId(), note.getContent());
+    public void deleteNote(Long id) {
+        if (!noteRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Note not found with id: " + id);
+        }
+        noteRepository.deleteById(id);
     }
 
-    public boolean deleteNote(Long id){
-        return notes.removeIf(note -> note.getId().equals(id));
+    public List<NoteDTO> getNotesByUser(Long userId) {
+        return noteRepository.findByUser_Id(userId).stream()
+                .map(note -> new NoteDTO(note.getId(), note.getContent(),
+                        note.getUser() != null ? note.getUser().getName() : null))
+                .collect(Collectors.toList());
     }
-
 }
 

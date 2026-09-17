@@ -1,6 +1,7 @@
 package com.huzaifah.task_manager;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,8 +28,9 @@ public class AuthController {
 
     // login endpoint — takes email and password, returns a JWT token if correct
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequest request) {
-        return authService.login(request);
+    public ResponseEntity<String> login(@RequestBody LoginRequest request) {
+        String token = authService.login(request);
+        return ResponseEntity.ok(token);
     }
 
     // temporary register endpoint — creates a user with a hashed password for testing

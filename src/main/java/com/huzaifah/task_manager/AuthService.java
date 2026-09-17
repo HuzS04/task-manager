@@ -17,16 +17,17 @@ public class AuthService {
     }
 
     public String login(LoginRequest request) {
-        // find user by email
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        // check if password matches the stored hash
+        System.out.println("User found: " + user.getEmail());
+
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid password");
         }
 
-        // generate and return a JWT token
+        System.out.println("Password matches");
+
         return jwtUtil.generateToken(user.getEmail());
     }
 }
