@@ -21,6 +21,8 @@ public class User {
     @Email(message = "Must be a valid email format")
     private String email;
 
+    private String password;
+
     // @OneToMany — one user has many tasks
     // mappedBy = "user" — the relationship is already defined on the Task side
     // in the field called "user" — don't create another foreign key column here
@@ -33,14 +35,25 @@ public class User {
 
     public User() {}
 
-    public User(Long id, String name, String email) {
+    public User(Long id, String name, String email, String password) {
         this.id = id;
         this.name = name;
         this.email = email;
+        this.password = password;
     }
 
     public Long getId() { return id; }
     public String getName() { return name; }
     public String getEmail() { return email; }
     public List<Task> getTasks() { return tasks; }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }
