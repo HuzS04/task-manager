@@ -65,4 +65,18 @@ class TaskControllerTest {
         assertEquals(204, response.getStatusCode().value());
         verify(taskService, times(1)).deleteTask(1L);
     }
+
+    @Test
+    void shouldCreateTask() {
+        Task task = new Task("Eat", false, 2);
+        TaskDTO fakeResult = new TaskDTO(1L, "Eat", false, "Alice");
+
+        when(taskService.createTask(task)).thenReturn(fakeResult);
+
+        ResponseEntity<TaskDTO> response = taskController.createTask(task);
+
+        assertEquals(201, response.getStatusCode().value());
+        assertEquals("Eat", response.getBody().getTitle());
+        verify(taskService, times(1)).createTask(task);
+    }
 }
